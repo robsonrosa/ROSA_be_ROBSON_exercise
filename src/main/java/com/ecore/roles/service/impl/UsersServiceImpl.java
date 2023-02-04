@@ -14,7 +14,7 @@ import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 @Service
-public class UsersServiceImpl implements UsersService {
+class UsersServiceImpl implements UsersService {
 
     private final UsersClient usersClient;
 
