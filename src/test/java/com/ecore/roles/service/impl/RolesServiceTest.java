@@ -2,9 +2,7 @@ package com.ecore.roles.service.impl;
 
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Role;
-import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
-import com.ecore.roles.service.MembershipsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,12 +25,6 @@ class RolesServiceTest {
 
     @Mock
     private RoleRepository roleRepository;
-
-    @Mock
-    private MembershipRepository membershipRepository;
-
-    @Mock
-    private MembershipsService membershipsService;
 
     @Test
     public void shouldCreateRole() {
