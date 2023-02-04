@@ -27,18 +27,18 @@ public class UsersRestController implements UsersApi {
     private final UserDtoMapper dtoMapper;
 
     @Override
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable final UUID id) {
-        return ResponseEntity
-                .status(OK)
-                .body(dtoMapper.apply(usersService.getUser(id)));
-    }
-
-    @Override
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity
                 .status(OK)
                 .body(dtoMapper.applyList(usersService.getUsers()));
+    }
+
+    @Override
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable final UUID id) {
+        return ResponseEntity
+                .status(OK)
+                .body(dtoMapper.apply(usersService.getUser(id)));
     }
 }

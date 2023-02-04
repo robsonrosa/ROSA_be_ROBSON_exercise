@@ -3,7 +3,6 @@ package com.ecore.roles.mapper;
 import com.ecore.roles.client.model.User;
 import com.ecore.roles.web.dto.UserDto;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,14 +18,7 @@ class UserDtoMapperTest {
     @Autowired
     private UserDtoMapper mapper;
 
-    private EasyRandom generator = new EasyRandom();
-
-    private User user;
-
-    @BeforeEach
-    public void setup() {
-        user = generator.nextObject(User.class);
-    }
+    private final EasyRandom generator = new EasyRandom();
 
     @Test
     public void shouldReturnNullWhenConvertingNull() {
@@ -40,6 +32,7 @@ class UserDtoMapperTest {
 
     @Test
     public void shouldReturnDtoWithSameValues() {
+        final User user = generator.nextObject(User.class);
         final UserDto dto = mapper.apply(user);
         validateEquals(user, dto);
     }

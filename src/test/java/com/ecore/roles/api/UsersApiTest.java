@@ -13,11 +13,11 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static com.ecore.roles.utils.MockUtils.mockGetUserById;
 import static com.ecore.roles.utils.MockUtils.mockGetUsers;
 import static com.ecore.roles.utils.RestAssuredHelper.*;
-import static com.ecore.roles.utils.TestData.UUID_1;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
@@ -89,9 +89,10 @@ public class UsersApiTest {
 
     @Test
     void shouldFailToGetUserByIdWhenNotFound() {
-        mockGetUserById(mockServer, UUID_1, null);
-        getUser(UUID_1)
-                .validate(404, format("User %s not found", UUID_1));
+        final UUID id = randomUUID();
+        mockGetUserById(mockServer, id, null);
+        getUser(id)
+                .validate(404, format("User %s not found", id));
     }
 
 }
