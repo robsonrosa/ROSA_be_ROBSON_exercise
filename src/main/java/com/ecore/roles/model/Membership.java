@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"team_id", "user_id"}))
 public class Membership {

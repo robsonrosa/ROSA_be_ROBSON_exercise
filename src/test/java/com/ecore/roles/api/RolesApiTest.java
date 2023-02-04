@@ -1,11 +1,13 @@
 package com.ecore.roles.api;
 
+import com.ecore.roles.mapper.MembershipMapper;
 import com.ecore.roles.mapper.RoleMapper;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.RoleDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -130,9 +132,11 @@ public class RolesApiTest {
     @Disabled
     @Test
     void shouldGetRoleByUserIdAndTeamId() {
+        // TODO: shouldn't manipulate membership in this scope - custom database initialization required
+        final MembershipMapper membershipMapper = new MembershipMapper(new ObjectMapper());
         final Membership expectedMembership = DEFAULT_MEMBERSHIP();
         mockGetTeamById(mockServer, ORDINARY_CORAL_LYNX_TEAM_UUID, ORDINARY_CORAL_LYNX_TEAM());
-        createMembership(DEVELOPER_ROLE_UUID, expectedMembership)
+        createMembership(DEVELOPER_ROLE_UUID, membershipMapper.fromModel(expectedMembership))
                 .statusCode(201);
 
         getRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
