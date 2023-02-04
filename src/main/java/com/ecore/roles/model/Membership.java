@@ -21,8 +21,8 @@ import java.util.UUID;
 public class Membership {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "membership-uuid-generator")
+    @GenericGenerator(name = "membership-uuid-generator", strategy = "uuid2")
     @Type(type = "uuid-char")
     private UUID id;
 
