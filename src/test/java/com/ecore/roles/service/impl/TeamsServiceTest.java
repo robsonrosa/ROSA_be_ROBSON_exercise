@@ -1,8 +1,7 @@
-package com.ecore.roles.service;
+package com.ecore.roles.service.impl;
 
 import com.ecore.roles.client.TeamsClient;
 import com.ecore.roles.client.model.Team;
-import com.ecore.roles.service.impl.TeamsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +20,7 @@ class TeamsServiceTest {
 
     @InjectMocks
     private TeamsServiceImpl TeamsService;
+    
     @Mock
     private TeamsClient TeamsClient;
 

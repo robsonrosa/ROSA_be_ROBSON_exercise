@@ -5,7 +5,6 @@ import com.ecore.roles.client.model.Team;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.service.TeamsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 @Service
-public class TeamsServiceImpl implements TeamsService {
+class TeamsServiceImpl implements TeamsService {
 
     private final TeamsClient client;
 

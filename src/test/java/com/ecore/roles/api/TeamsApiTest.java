@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import static com.ecore.roles.utils.MockUtils.*;
 import static com.ecore.roles.utils.RestAssuredHelper.*;
-import static com.ecore.roles.utils.TestData.UUID_1;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
