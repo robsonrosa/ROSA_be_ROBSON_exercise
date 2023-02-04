@@ -18,7 +18,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/roles", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/v1/roles", produces = APPLICATION_JSON_VALUE)
 public class RolesRestController implements RolesApi {
 
     private final RolesService service;
@@ -26,7 +26,7 @@ public class RolesRestController implements RolesApi {
     private final RoleMapper mapper;
 
     @Override
-    @PostMapping
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<RoleDto> createRole(@Valid @RequestBody final RoleDto dto) {
         return ResponseEntity
                 .status(CREATED)

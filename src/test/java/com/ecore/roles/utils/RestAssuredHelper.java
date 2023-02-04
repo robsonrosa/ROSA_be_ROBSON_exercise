@@ -1,7 +1,6 @@
 package com.ecore.roles.utils;
 
 import com.ecore.roles.model.Membership;
-import com.ecore.roles.model.Role;
 import com.ecore.roles.web.dto.MembershipDto;
 import com.ecore.roles.web.dto.RoleDto;
 import io.restassured.RestAssured;
@@ -30,8 +29,8 @@ public class RestAssuredHelper {
         return new EcoreValidatableResponse(validatableResponse);
     }
 
-    public static EcoreValidatableResponse createRole(Role role) {
-        return sendRequest(givenNullableBody(RoleDto.fromModel(role))
+    public static EcoreValidatableResponse createRole(RoleDto dto) {
+        return sendRequest(givenNullableBody(dto)
                 .contentType(JSON)
                 .when()
                 .post("/v1/roles")
@@ -72,11 +71,11 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID roleId) {
+    public static EcoreValidatableResponse getRole(UUID id) {
         return sendRequest(given()
-                .pathParam("roleId", roleId)
+                .pathParam("id", id)
                 .when()
-                .get("/v1/roles/{roleId}")
+                .get("/v1/roles/{id}")
                 .then());
     }
 
