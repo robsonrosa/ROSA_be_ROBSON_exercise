@@ -1,5 +1,6 @@
 package com.ecore.roles.web.rest;
 
+import com.ecore.roles.mapper.TeamDtoMapper;
 import com.ecore.roles.service.TeamsService;
 import com.ecore.roles.web.TeamsApi;
 import com.ecore.roles.web.dto.TeamDto;
@@ -12,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static com.ecore.roles.web.dto.TeamDto.fromModel;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -23,16 +22,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping(value = "/v1/teams", produces = APPLICATION_JSON_VALUE)
 public class TeamsRestController implements TeamsApi {
 
-    private final TeamsService teamsService;
+    private final TeamsService service;
+
+    private final TeamDtoMapper mapper;
 
     @Override
     @GetMapping
     public ResponseEntity<List<TeamDto>> getTeams() {
         return ResponseEntity
                 .status(OK)
-                .body(teamsService.getTeams().stream()
-                        .map(TeamDto::fromModel)
-                        .collect(Collectors.toList()));
+                .body(mapper.applyList(service.getTeams()));
     }
 
     @Override
@@ -40,7 +39,7 @@ public class TeamsRestController implements TeamsApi {
     public ResponseEntity<TeamDto> getTeam(@PathVariable final UUID id) {
         return ResponseEntity
                 .status(OK)
-                .body(fromModel(teamsService.getTeam(id)));
+                .body(mapper.apply(service.getTeam(id)));
     }
 
 }
