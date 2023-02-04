@@ -1,5 +1,6 @@
 package com.ecore.roles.web.rest;
 
+import com.ecore.roles.mapper.UserDtoMapper;
 import com.ecore.roles.service.UsersService;
 import com.ecore.roles.web.UsersApi;
 import com.ecore.roles.web.dto.UserDto;
@@ -12,9 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static com.ecore.roles.web.dto.UserDto.fromModel;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
@@ -24,21 +24,21 @@ public class UsersRestController implements UsersApi {
 
     private final UsersService usersService;
 
+    private final UserDtoMapper dtoMapper;
+
     @Override
-    @GetMapping(path = "/{userId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable final UUID userId) {
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable final UUID id) {
         return ResponseEntity
-                .status(200)
-                .body(fromModel(usersService.getUser(userId)));
+                .status(OK)
+                .body(dtoMapper.apply(usersService.getUser(id)));
     }
 
     @Override
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity
-                .status(200)
-                .body(usersService.getUsers().stream()
-                        .map(UserDto::fromModel)
-                        .collect(Collectors.toList()));
+                .status(OK)
+                .body(dtoMapper.applyList(usersService.getUsers()));
     }
 }

@@ -17,6 +17,7 @@ import java.util.UUID;
 public class UsersClient {
 
     private final RestTemplate restTemplate;
+
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
     public ResponseEntity<User> getUser(UUID id) {
