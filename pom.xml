@@ -19,6 +19,7 @@
         <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+        <easy-random.version>5.0.0</easy-random.version>
     </properties>
     <dependencies>
         <dependency>
@@ -79,6 +80,12 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>xml-path</artifactId>
             <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>${easy-random.version}</version>
             <scope>test</scope>
         </dependency>
         <!--runtime-->
