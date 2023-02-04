@@ -10,4 +10,5 @@ public interface MembershipsService {
     Membership assignRoleToMembership(Membership membership);
 
     List<Membership> getMemberships(UUID roleId);
+
 }
