@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -38,7 +39,7 @@ public class MembershipsRestController implements MembershipsApi {
                 .build());
         final Membership membership = service.assignRoleToMembership(model);
         return ResponseEntity
-                .status(OK)
+                .status(CREATED)
                 .body(mapper.fromModel(membership));
     }
 
