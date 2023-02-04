@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Log4j2
 @Service
-public class RolesServiceImpl implements RolesService {
+class RolesServiceImpl implements RolesService {
 
     public static final String DEFAULT_ROLE = "Developer";
 
