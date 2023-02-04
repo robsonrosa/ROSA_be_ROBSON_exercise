@@ -1,12 +1,12 @@
 package com.ecore.roles.api;
 
+import com.ecore.roles.client.model.User;
 import com.ecore.roles.mapper.MembershipMapper;
 import com.ecore.roles.model.Membership;
 import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.MembershipDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.UUID;
 
 import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
+import static com.ecore.roles.utils.MockUtils.mockGetUserById;
 import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
 import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
 import static com.ecore.roles.utils.TestData.*;
@@ -111,22 +112,20 @@ public class MembershipsApiTests {
                 .validate(404, format("Role %s not found", id));
     }
 
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamDoesNotExist() {
         final Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        mockGetUserById(mockServer, expectedMembership.getUserId(), GIANNI_USER());
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), null);
 
         createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
                 .validate(404, format("Team %s not found", expectedMembership.getTeamId()));
     }
 
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
     @Test
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         final Membership expectedMembership = INVALID_MEMBERSHIP();
+        mockGetUserById(mockServer, expectedMembership.getUserId(), User.builder().build());
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
 
         createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
@@ -159,6 +158,7 @@ public class MembershipsApiTests {
 
     private MembershipDto createDefaultMembership() {
         final Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        mockGetUserById(mockServer, expectedMembership.getUserId(), GIANNI_USER());
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
 
         return createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
