@@ -20,7 +20,7 @@ import static java.util.Optional.ofNullable;
 
 @Log4j2
 @Service
-public class MembershipsServiceImpl implements MembershipsService {
+class MembershipsServiceImpl implements MembershipsService {
 
     private final MembershipRepository membershipRepository;
     private final RoleRepository roleRepository;
