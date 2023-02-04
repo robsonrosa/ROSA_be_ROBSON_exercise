@@ -5,7 +5,6 @@ import com.ecore.roles.web.dto.TeamDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.jeasy.random.EasyRandom;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,13 +22,6 @@ class TeamDtoMapperTest {
 
     private final EasyRandom generator = new EasyRandom();
 
-    private Team team;
-
-    @BeforeEach
-    public void setup() {
-        team = generator.nextObject(Team.class);
-    }
-
     @Test
     public void shouldReturnNullWhenConvertingNull() {
         assertNull(mapper.apply(null));
@@ -42,6 +34,7 @@ class TeamDtoMapperTest {
 
     @Test
     public void shouldReturnDtoWithSameValues() {
+        final Team team = generator.nextObject(Team.class);
         final TeamDto dto = mapper.apply(team);
         validateEquals(team, dto);
     }
