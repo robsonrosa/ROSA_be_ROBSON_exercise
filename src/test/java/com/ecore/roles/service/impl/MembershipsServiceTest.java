@@ -26,12 +26,16 @@ class MembershipsServiceTest {
 
     @InjectMocks
     private MembershipsServiceImpl membershipsService;
+
     @Mock
     private MembershipRepository membershipRepository;
+
     @Mock
     private RoleRepository roleRepository;
+
     @Mock
     private UsersService usersService;
+
     @Mock
     private TeamsService teamsService;
 

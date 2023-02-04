@@ -9,8 +9,7 @@ import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.repository.RoleRepository;
 import com.ecore.roles.service.MembershipsService;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,20 +17,13 @@ import java.util.UUID;
 
 import static java.util.Optional.ofNullable;
 
-@Log4j2
+@RequiredArgsConstructor
 @Service
 class MembershipsServiceImpl implements MembershipsService {
 
     private final MembershipRepository membershipRepository;
-    private final RoleRepository roleRepository;
 
-    @Autowired
-    public MembershipsServiceImpl(
-            MembershipRepository membershipRepository,
-            RoleRepository roleRepository) {
-        this.membershipRepository = membershipRepository;
-        this.roleRepository = roleRepository;
-    }
+    private final RoleRepository roleRepository;
 
     @Override
     public Membership assignRoleToMembership(@NonNull Membership m) {
