@@ -30,19 +30,19 @@ public class RolesRestController implements RolesApi {
     public ResponseEntity<RoleDto> createRole(@Valid @RequestBody final RoleDto dto) {
         return ResponseEntity
                 .status(CREATED)
-                .body(mapper.fromModel(service.CreateRole(mapper.fromDto(dto))));
+                .body(mapper.fromModel(service.createRole(mapper.fromDto(dto))));
     }
 
     @Override
     @GetMapping(path = "/{id}")
     public ResponseEntity<RoleDto> getRole(@PathVariable final UUID id) {
-        return ok(mapper.fromModel(service.GetRole(id)));
+        return ok(mapper.fromModel(service.getRole(id)));
     }
 
     @Override
     @GetMapping
     public ResponseEntity<List<RoleDto>> getRoles() {
-        return ok(mapper.fromModelList(service.GetRoles()));
+        return ok(mapper.fromModelList(service.getRoles()));
     }
 
 }
