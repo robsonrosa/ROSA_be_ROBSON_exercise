@@ -1,5 +1,6 @@
 package com.ecore.roles.service.impl;
 
+import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Role;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.nonNull;
+
 @RequiredArgsConstructor
 @Service
 class RolesServiceImpl implements RolesService {
@@ -20,7 +23,11 @@ class RolesServiceImpl implements RolesService {
 
     @Override
     public Role createRole(@NonNull final Role role) {
-        if (roleRepository.findByName(role.getName()).isPresent()) {
+        if (nonNull(role.getId())) {
+            throw new InvalidArgumentException(Role.class);
+        }
+
+        if (roleRepository.existsByName(role.getName())) {
             throw new ResourceExistsException(Role.class);
         }
         return roleRepository.save(role);

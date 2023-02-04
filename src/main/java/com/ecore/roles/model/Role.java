@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @Entity
 public class Role {
 
