@@ -88,19 +88,20 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse createMembership(Membership membership) {
+    public static EcoreValidatableResponse createMembership(UUID roleId, Membership membership) {
         return sendRequest(givenNullableBody(MembershipDto.fromModel(membership))
+                .pathParam("roleId", roleId)
                 .contentType(JSON)
                 .when()
-                .post("/v1/roles/memberships")
+                .post("/v1/roles/{roleId}/memberships")
                 .then());
     }
 
     public static EcoreValidatableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
-                .queryParam("roleId", roleId)
+                .pathParam("roleId", roleId)
                 .when()
-                .get("/v1/roles/memberships/search")
+                .get("/v1/roles/{roleId}/memberships")
                 .then());
     }
 

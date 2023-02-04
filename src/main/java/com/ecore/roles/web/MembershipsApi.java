@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface MembershipsApi {
 
     ResponseEntity<MembershipDto> assignRoleToMembership(
+            UUID roleId,
             MembershipDto membership);
 
     ResponseEntity<List<MembershipDto>> getMemberships(

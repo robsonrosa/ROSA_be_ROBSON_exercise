@@ -7,6 +7,7 @@ import com.ecore.roles.web.dto.MembershipDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -14,36 +15,36 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.ecore.roles.web.dto.MembershipDto.fromModel;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/roles/memberships")
+@RequestMapping(value = "/v1/roles/{roleId}/memberships", produces = APPLICATION_JSON_VALUE)
 public class MembershipsRestController implements MembershipsApi {
 
-    private final MembershipsService membershipsService;
+    private final MembershipsService service;
 
     @Override
-    @PostMapping(
-            consumes = {"application/json"},
-            produces = {"application/json"})
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<MembershipDto> assignRoleToMembership(
-            @NotNull @Valid @RequestBody MembershipDto membershipDto) {
-        Membership membership = membershipsService.assignRoleToMembership(membershipDto.toModel());
+            @PathVariable final UUID roleId,
+            @NotNull @Valid @RequestBody final MembershipDto dto) {
+        dto.setRoleId(roleId);
+        final Membership membership = service.assignRoleToMembership(dto.toModel());
         return ResponseEntity
-                .status(200)
+                .status(OK)
                 .body(fromModel(membership));
     }
 
     @Override
-    @PostMapping(
-            path = "/search",
-            produces = {"application/json"})
+    @GetMapping
     public ResponseEntity<List<MembershipDto>> getMemberships(
-            @RequestParam UUID roleId) {
+            @PathVariable final UUID roleId) {
 
-        List<Membership> memberships = membershipsService.getMemberships(roleId);
+        final List<Membership> memberships = service.getMemberships(roleId);
 
-        List<MembershipDto> newMembershipDto = new ArrayList<>();
+        final List<MembershipDto> newMembershipDto = new ArrayList<>();
 
         for (Membership membership : memberships) {
             MembershipDto membershipDto = fromModel(membership);
@@ -51,7 +52,7 @@ public class MembershipsRestController implements MembershipsApi {
         }
 
         return ResponseEntity
-                .status(200)
+                .status(OK)
                 .body(newMembershipDto);
     }
 
