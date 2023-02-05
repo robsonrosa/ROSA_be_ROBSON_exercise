@@ -18,11 +18,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -60,6 +62,36 @@ class MembershipsServiceTest {
         final Team expectedTeam = generator.nextObject(Team.class)
                 .toBuilder()
                 .teamMemberIds(singletonList(userId))
+                .build();
+        final Membership expected = model.toBuilder()
+                .id(randomUUID()).build();
+
+        when(rolesService.getRole(roleId)).thenReturn(expectedRole);
+        when(membershipRepository.existsByUserIdAndTeamId(userId, teamId)).thenReturn(false);
+        when(usersService.getUser(userId)).thenReturn(expectedUser);
+        when(teamsService.getTeam(teamId)).thenReturn(expectedTeam);
+        when(membershipRepository.save(model)).thenReturn(expected);
+
+        final Membership actual = membershipsService.assignRoleToMembership(model);
+
+        assertNotNull(actual);
+        assertEquals(actual, expected);
+        verify(rolesService, times(1)).getRole(roleId);
+    }
+
+    @Test
+    public void shouldCreateMembershipWhenUserIsTheTeamLeadInsteadOfMember() {
+        final Membership model = build();
+        final UUID userId = model.getUserId();
+        final UUID teamId = model.getTeamId();
+        final UUID roleId = model.getRole().getId();
+
+        final Role expectedRole = generator.nextObject(Role.class);
+        final User expectedUser = generator.nextObject(User.class)
+                .toBuilder().id(userId).build();
+        final Team expectedTeam = generator.nextObject(Team.class)
+                .toBuilder()
+                .teamLeadId(userId)
                 .build();
         final Membership expected = model.toBuilder()
                 .id(randomUUID()).build();
@@ -212,6 +244,37 @@ class MembershipsServiceTest {
     public void shouldFailToGetMembershipsWhenRoleIdIsNull() {
         assertThrows(NullPointerException.class,
                 () -> membershipsService.getMemberships(null));
+
+        verifyNoInteractions(rolesService);
+        verifyNoInteractions(membershipRepository);
+    }
+
+    @Test
+    public void shouldFailToGetMembershipsWhenRoleIdIsNotFound() {
+        final UUID roleId = randomUUID();
+
+        when(rolesService.getRole(roleId)).thenThrow(new ResourceNotFoundException(Role.class, roleId));
+
+        final ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> membershipsService.getMemberships(roleId));
+
+        assertEquals(format("Role %s not found", roleId), exception.getMessage());
+        verifyNoInteractions(membershipRepository);
+    }
+
+    @Test
+    public void shoulGetMembershipsFromRole() {
+        final UUID roleId = randomUUID();
+        final Role role = generator.nextObject(Role.class)
+                .toBuilder().id(roleId).build();
+        final List<Membership> expected = generator.objects(Membership.class, 10).collect(toList());
+
+        when(rolesService.getRole(roleId)).thenReturn(role);
+        when(membershipRepository.findByRoleId(roleId)).thenReturn(expected);
+
+        final List<Membership> actual = membershipsService.getMemberships(roleId);
+
+        assertEquals(expected, actual);
     }
 
     private Membership build() {

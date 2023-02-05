@@ -60,11 +60,11 @@ public class TeamsApiTest {
 
     @Test
     void shouldGetAllTeams() {
-        mockGetTeams(mockServer, generator, 500);
+        mockGetTeams(mockServer, generator, 100);
         final TeamDto[] teams = getTeams()
                 .extract().as(TeamDto[].class);
 
-        assertThat(teams.length).isGreaterThanOrEqualTo(500);
+        assertThat(teams.length).isGreaterThanOrEqualTo(100);
         Arrays.stream(teams).forEach(team -> {
             assertNotNull(team.getId());
             assertNotNull(team.getName());
