@@ -38,6 +38,20 @@ public class RestAssuredHelper {
                 .then());
     }
 
+    public static EcoreValidatableResponse getUsers() {
+        return sendRequest(when()
+                .get("/v1/users")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getUser(final UUID id) {
+        return sendRequest(given()
+                .pathParam("id", id)
+                .when()
+                .get("/v1/users/{id}")
+                .then());
+    }
+
     public static EcoreValidatableResponse getRoles() {
         return sendRequest(when()
                 .get("/v1/roles")

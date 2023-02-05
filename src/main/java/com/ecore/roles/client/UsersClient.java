@@ -17,9 +17,10 @@ import java.util.UUID;
 public class UsersClient {
 
     private final RestTemplate restTemplate;
+
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
-    public ResponseEntity<User> getUser(UUID id) {
+    public ResponseEntity<User> getUser(final UUID id) {
         return restTemplate.exchange(
                 clientsConfigurationProperties.getUsersApiHost() + "/" + id,
                 HttpMethod.GET,
