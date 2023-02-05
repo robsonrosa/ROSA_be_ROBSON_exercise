@@ -24,6 +24,7 @@ import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
 import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
 import static com.ecore.roles.utils.TestData.*;
 import static com.ecore.roles.utils.TestData.RoleEnum.DEVELOPER;
+import static com.ecore.roles.utils.TestData.RoleEnum.PRODUCT_OWNER;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -180,8 +181,17 @@ public class MembershipsApiTests {
     }
 
     @Test
-    void shouldGetAllMembershipsButReturnsEmptyList() {
+    void shouldFailGetAllMembershipsWhenRoleIsNotFound() {
         final UUID roleId = randomUUID();
+
+        getMemberships(roleId)
+                .validate(404,
+                        format("Role %s not found", roleId));
+    }
+
+    @Test
+    void shouldGetAllMembershipsButReturnsEmptyList() {
+        final UUID roleId = PRODUCT_OWNER.getId();
 
         final MembershipDto[] actual = getMemberships(roleId)
                 .statusCode(200)
