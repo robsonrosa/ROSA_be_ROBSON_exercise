@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class DefaultExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(ResourceNotFoundException exception) {
+    public ResponseEntity<ErrorResponse> handle(final ResourceNotFoundException exception) {
         return createResponse(404, exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(ResourceExistsException exception) {
+    public ResponseEntity<ErrorResponse> handle(final ResourceExistsException exception) {
         return createResponse(400, exception.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handle(InvalidArgumentException exception) {
+    public ResponseEntity<ErrorResponse> handle(final InvalidArgumentException exception) {
         return createResponse(400, exception.getMessage());
     }
 
