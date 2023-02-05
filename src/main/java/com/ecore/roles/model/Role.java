@@ -1,13 +1,12 @@
 package com.ecore.roles.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -28,5 +27,9 @@ public class Role {
     @EqualsAndHashCode.Include
     @Column(nullable = false, unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Membership> memberships;
 
 }

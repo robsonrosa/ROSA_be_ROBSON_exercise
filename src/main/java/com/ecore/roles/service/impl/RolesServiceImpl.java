@@ -18,7 +18,7 @@ import static java.util.Objects.nonNull;
 @Service
 class RolesServiceImpl implements RolesService {
 
-    private final RoleRepository roleRepository;
+    private final RoleRepository repository;
 
     @Override
     public Role createRole(@NonNull final Role role) {
@@ -26,21 +26,26 @@ class RolesServiceImpl implements RolesService {
             throw new ResourceExistsException(Role.class);
         }
 
-        if (roleRepository.existsByName(role.getName())) {
+        if (repository.existsByName(role.getName())) {
             throw new ResourceExistsException(Role.class);
         }
-        return roleRepository.save(role);
+        return repository.save(role);
     }
 
     @Override
     public Role getRole(@NonNull final UUID id) {
-        return roleRepository.findById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Role.class, id));
     }
 
     @Override
+    public List<Role> searchRole(@NonNull final UUID userId, @NonNull final UUID teamId) {
+        return repository.findByMembershipsContainingUserIdAndTeamId(userId, teamId);
+    }
+
+    @Override
     public List<Role> getRoles() {
-        return roleRepository.findAll();
+        return repository.findAll();
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,15 +35,24 @@ public class RolesRestController implements RolesApi {
     }
 
     @Override
+    @GetMapping
+    public ResponseEntity<List<RoleDto>> getRoles() {
+        return ok(mapper.fromModelList(service.getRoles()));
+    }
+
+    @Override
     @GetMapping(path = "/{id}")
     public ResponseEntity<RoleDto> getRole(@PathVariable final UUID id) {
         return ok(mapper.fromModel(service.getRole(id)));
     }
 
     @Override
-    @GetMapping
-    public ResponseEntity<List<RoleDto>> getRoles() {
-        return ok(mapper.fromModelList(service.getRoles()));
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<RoleDto>> searchRole(
+            @NotBlank @RequestParam final UUID userId,
+            @NotBlank @RequestParam final UUID teamId) {
+
+        return ok(mapper.fromModelList(service.searchRole(userId, teamId)));
     }
 
 }

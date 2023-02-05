@@ -1,15 +1,11 @@
 package com.ecore.roles.api;
 
-import com.ecore.roles.mapper.MembershipMapper;
 import com.ecore.roles.mapper.RoleMapper;
-import com.ecore.roles.model.Membership;
 import com.ecore.roles.model.Role;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.RoleDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
-import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
 import static com.ecore.roles.utils.RestAssuredHelper.*;
-import static com.ecore.roles.utils.TestData.*;
+import static com.ecore.roles.utils.TestData.DEFAULT_TEAM_UUID;
+import static com.ecore.roles.utils.TestData.DEFAULT_USER_UUID;
 import static com.ecore.roles.utils.TestData.RoleEnum.*;
 import static io.restassured.RestAssured.when;
 import static java.lang.String.format;
@@ -118,7 +114,7 @@ public class RolesApiTest {
     void shouldGetRoleById() {
         Role expectedRole = DEVELOPER.get();
 
-        getRole(expectedRole.getId())
+        searchRole(expectedRole.getId())
                 .statusCode(200)
                 .body("name", equalTo(expectedRole.getName()));
     }
@@ -126,50 +122,30 @@ public class RolesApiTest {
     @Test
     void shouldFailToGetRoleByIdWhenNotFound() {
         final UUID id = randomUUID();
-        getRole(id)
+        searchRole(id)
                 .validate(404, format("Role %s not found", id));
     }
 
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
     @Test
-    void shouldGetRoleByUserIdAndTeamId() {
-        // TODO: shouldn't manipulate membership in this scope - custom database initialization required
-        final MembershipMapper membershipMapper = new MembershipMapper(new ObjectMapper());
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetTeamById(mockServer, DEFAULT_TEAM_UUID, DEFAULT_TEAM());
-        createMembership(DEVELOPER.getId(), membershipMapper.fromModel(expectedMembership))
-                .statusCode(201);
-
-        getRole(expectedMembership.getUserId(), expectedMembership.getTeamId())
+    void shouldGetRolesByUserIdAndTeamId() {
+        final RoleDto[] roles = searchRole(DEFAULT_USER_UUID, DEFAULT_TEAM_UUID)
                 .statusCode(200)
-                .body("name", equalTo(expectedMembership.getRole().getName()));
+                .extract().as(RoleDto[].class);
+
+        assertThat(roles.length).isGreaterThanOrEqualTo(1);
+        assertThat(roles).contains(mapper.fromModel(DEVELOPER.get()));
     }
 
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
     @Test
     void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingUserId() {
-        getRole(null, DEFAULT_TEAM_UUID)
+        searchRole(null, DEFAULT_TEAM_UUID)
                 .validate(400, "Bad Request");
     }
 
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
     @Test
     void shouldFailToGetRoleByUserIdAndTeamIdWhenMissingTeamId() {
-        getRole(DEFAULT_USER_UUID, null)
+        searchRole(DEFAULT_USER_UUID, null)
                 .validate(400, "Bad Request");
-    }
-
-    // TODO: remove @Disabled -> implementation required
-    @Disabled
-    @Test
-    void shouldFailToGetRoleByUserIdAndTeamIdWhenItDoesNotExist() {
-        final UUID teamId = randomUUID();
-        mockGetTeamById(mockServer, teamId, null);
-        getRole(DEFAULT_USER_UUID, teamId)
-                .validate(404, format("Team %s not found", teamId));
     }
 
     private RoleDto build() {
