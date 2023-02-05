@@ -1,6 +1,5 @@
 package com.ecore.roles.service.impl;
 
-import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Role;
@@ -15,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.UUID;
 
-import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE_NAME;
+import static com.ecore.roles.utils.TestData.RoleEnum.DEVELOPER;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -47,7 +46,7 @@ class RolesServiceTest {
 
         try {
             service.createRole(model);
-        } catch (InvalidArgumentException exception) {
+        } catch (ResourceExistsException exception) {
             verifyNoInteractions(repository);
             return;
         }
@@ -57,7 +56,7 @@ class RolesServiceTest {
 
     @Test
     public void shouldFailToCreateRoleWhenRoleNameExists() {
-        final Role model = buildWithName(DEVELOPER_ROLE_NAME);
+        final Role model = buildWithName(DEVELOPER.getName());
 
         when(repository.existsByName(model.getName())).thenReturn(true);
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
@@ -39,6 +40,10 @@ class MembershipsServiceImpl implements MembershipsService {
         final UUID teamId = membership.getTeamId();
         final UUID roleId = ofNullable(membership.getRole()).map(Role::getId)
                 .orElseThrow(() -> new InvalidArgumentException(Role.class));
+
+        if (nonNull(membership.getId())) {
+            throw new ResourceExistsException(Membership.class);
+        }
 
         rolesService.getRole(roleId);
 
