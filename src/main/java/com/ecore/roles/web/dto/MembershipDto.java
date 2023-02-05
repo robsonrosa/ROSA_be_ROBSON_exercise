@@ -1,69 +1,44 @@
 package com.ecore.roles.web.dto;
 
-import com.ecore.roles.model.Membership;
-import com.ecore.roles.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.UUID;
-
-import static java.util.Optional.ofNullable;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class MembershipDto {
+@Schema(description = "A membership in the system")
+public class MembershipDto implements Serializable {
+
+    private static final long serialVersionUID = 6320871070017871416L;
 
     @JsonProperty
+    @Schema(description = "The uuid of the membership", example = "98de61a0-b9e3-11ec-8422-0242ac120002")
     private UUID id;
 
     @JsonProperty
-    @Valid
     @NotNull
     @EqualsAndHashCode.Include
+    @Schema(description = "The uuid of the role", example = "1b3c333b-36e7-4b64-aa15-c22ed5908ce4")
     private UUID roleId;
 
-    @JsonProperty(value = "teamMemberId")
-    @Valid
+    @JsonProperty
     @NotNull
     @EqualsAndHashCode.Include
+    @Schema(description = "The uuid of the user", example = "fd282131-d8aa-4819-b0c8-d9e0bfb1b75c")
     private UUID userId;
 
     @JsonProperty
-    @Valid
     @NotNull
     @EqualsAndHashCode.Include
+    @Schema(description = "The uuid of the team", example = "7676a4bf-adfe-415c-941b-1739af07039b")
     private UUID teamId;
-
-    public static MembershipDto fromModel(Membership membership) {
-        if (membership == null) {
-            return null;
-        }
-        return MembershipDto.builder()
-                .id(membership.getId())
-                .roleId(ofNullable(membership.getRole()).map(Role::getId).orElse(null))
-                .userId(membership.getUserId())
-                .teamId(membership.getTeamId())
-                .build();
-    }
-
-    public Membership toModel() {
-        return Membership.builder()
-                .id(this.id)
-                .role(Role.builder().id(this.roleId).build())
-                .userId(this.userId)
-                .teamId(this.teamId)
-                .build();
-    }
 
 }

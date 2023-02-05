@@ -1,8 +1,14 @@
 spring:
+  cache:
+    retention: 60
+    type: redis
   datasource:
     url: jdbc:h2:mem:test
     username: a
     password: password
+  redis:
+    host: localhost
+    port: 6379
 
 clients:
   users-api-host: https://cgjresszgg.execute-api.eu-west-1.amazonaws.com/users

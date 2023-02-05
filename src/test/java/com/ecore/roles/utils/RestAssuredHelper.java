@@ -1,7 +1,5 @@
 package com.ecore.roles.utils;
 
-import com.ecore.roles.model.Membership;
-import com.ecore.roles.model.Role;
 import com.ecore.roles.web.dto.MembershipDto;
 import com.ecore.roles.web.dto.RoleDto;
 import io.restassured.RestAssured;
@@ -30,11 +28,39 @@ public class RestAssuredHelper {
         return new EcoreValidatableResponse(validatableResponse);
     }
 
-    public static EcoreValidatableResponse createRole(Role role) {
-        return sendRequest(givenNullableBody(RoleDto.fromModel(role))
+    public static EcoreValidatableResponse createRole(RoleDto dto) {
+        return sendRequest(givenNullableBody(dto)
                 .contentType(JSON)
                 .when()
                 .post("/v1/roles")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getTeams() {
+        return sendRequest(when()
+                .get("/v1/teams")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getTeam(final UUID id) {
+        return sendRequest(given()
+                .pathParam("id", id)
+                .when()
+                .get("/v1/teams/{id}")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getUsers() {
+        return sendRequest(when()
+                .get("/v1/users")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getUser(final UUID id) {
+        return sendRequest(given()
+                .pathParam("id", id)
+                .when()
+                .get("/v1/users/{id}")
                 .then());
     }
 
@@ -44,36 +70,37 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID roleId) {
+    public static EcoreValidatableResponse searchRole(UUID id) {
         return sendRequest(given()
-                .pathParam("roleId", roleId)
+                .pathParam("id", id)
                 .when()
-                .get("/v1/roles/{roleId}")
+                .get("/v1/roles/{id}")
                 .then());
     }
 
-    public static EcoreValidatableResponse getRole(UUID userId, UUID teamId) {
+    public static EcoreValidatableResponse searchRole(UUID userId, UUID teamId) {
         return sendRequest(given()
-                .queryParam("teamMemberId", userId)
+                .queryParam("userId", userId)
                 .queryParam("teamId", teamId)
                 .when()
                 .get("/v1/roles/search")
                 .then());
     }
 
-    public static EcoreValidatableResponse createMembership(Membership membership) {
-        return sendRequest(givenNullableBody(MembershipDto.fromModel(membership))
+    public static EcoreValidatableResponse createMembership(UUID roleId, MembershipDto dto) {
+        return sendRequest(givenNullableBody(dto)
+                .pathParam("roleId", roleId)
                 .contentType(JSON)
                 .when()
-                .post("/v1/roles/memberships")
+                .post("/v1/roles/{roleId}/memberships")
                 .then());
     }
 
     public static EcoreValidatableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
-                .queryParam("roleId", roleId)
+                .pathParam("roleId", roleId)
                 .when()
-                .get("/v1/roles/memberships/search")
+                .get("/v1/roles/{roleId}/memberships")
                 .then());
     }
 

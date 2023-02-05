@@ -8,15 +8,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = -3742559143510588373L;
 
     @JsonProperty
     private UUID id;

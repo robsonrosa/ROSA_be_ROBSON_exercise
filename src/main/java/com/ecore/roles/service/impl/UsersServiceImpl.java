@@ -2,28 +2,31 @@ package com.ecore.roles.service.impl;
 
 import com.ecore.roles.client.UsersClient;
 import com.ecore.roles.client.model.User;
+import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.service.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Optional.ofNullable;
+
+@RequiredArgsConstructor
 @Service
-public class UsersServiceImpl implements UsersService {
+class UsersServiceImpl implements UsersService {
 
-    private final UsersClient usersClient;
+    private final UsersClient client;
 
-    @Autowired
-    public UsersServiceImpl(UsersClient usersClient) {
-        this.usersClient = usersClient;
+    @Cacheable("get-one-user")
+    public User getUser(final UUID id) {
+        return ofNullable(client.getUser(id).getBody())
+                .orElseThrow(() -> new ResourceNotFoundException(User.class, id));
     }
 
-    public User getUser(UUID id) {
-        return usersClient.getUser(id).getBody();
-    }
-
+    @Cacheable("get-all-users")
     public List<User> getUsers() {
-        return usersClient.getUsers().getBody();
+        return client.getUsers().getBody();
     }
 }

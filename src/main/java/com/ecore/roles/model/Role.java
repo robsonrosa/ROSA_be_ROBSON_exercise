@@ -1,34 +1,38 @@
 package com.ecore.roles.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @Entity
-public class Role {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Role implements Serializable {
+
+    private static final long serialVersionUID = 5462707772967932533L;
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "role-uuid-generator")
+    @GenericGenerator(name = "role-uuid-generator", strategy = "uuid2")
     @Type(type = "uuid-char")
     private UUID id;
 
+    @EqualsAndHashCode.Include
     @Column(nullable = false, unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Membership> memberships;
 
 }
