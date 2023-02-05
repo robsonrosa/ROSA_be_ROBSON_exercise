@@ -17,6 +17,7 @@ import java.util.UUID;
 public class TeamsClient {
 
     private final RestTemplate restTemplate;
+
     private final ClientsConfigurationProperties clientsConfigurationProperties;
 
     public ResponseEntity<Team> getTeam(UUID id) {

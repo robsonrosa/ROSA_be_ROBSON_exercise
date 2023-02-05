@@ -2,6 +2,7 @@ package com.ecore.roles.utils;
 
 import com.ecore.roles.client.model.Team;
 import com.ecore.roles.client.model.User;
+import com.ecore.roles.web.dto.TeamDto;
 import com.ecore.roles.web.dto.UserDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,5 +68,19 @@ public class MockUtils {
                         withStatus(HttpStatus.OK)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(new ObjectMapper().writeValueAsString(users)));
+    }
+
+    @SneakyThrows
+    public static void mockGetTeams(
+            final MockRestServiceServer mockServer,
+            final EasyRandom generator,
+            int size) {
+        final List<TeamDto> teams = generator.objects(TeamDto.class, size).collect(toList());
+        mockServer.expect(ExpectedCount.manyTimes(), requestTo("http://test.com/teams"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new ObjectMapper().writeValueAsString(teams)));
     }
 }
