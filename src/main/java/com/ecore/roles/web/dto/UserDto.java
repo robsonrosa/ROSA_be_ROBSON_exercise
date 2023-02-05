@@ -7,13 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-public class UserDto {
+public class UserDto implements Serializable {
+
+    private static final long serialVersionUID = 1340568139714227444L;
 
     @JsonProperty
     private UUID id;

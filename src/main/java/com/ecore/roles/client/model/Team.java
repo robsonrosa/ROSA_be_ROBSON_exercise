@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,9 @@ import java.util.UUID;
 @Setter
 @Builder(toBuilder = true)
 @EqualsAndHashCode
-public class Team {
+public class Team implements Serializable {
+
+    private static final long serialVersionUID = -415703397673636255L;
 
     @Id
     @JsonProperty

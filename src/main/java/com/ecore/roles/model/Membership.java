@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -15,7 +16,9 @@ import java.util.UUID;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"team_id", "user_id"}))
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Membership {
+public class Membership implements Serializable {
+
+    private static final long serialVersionUID = -6933764204165149761L;
 
     @Id
     @GeneratedValue(generator = "membership-uuid-generator")

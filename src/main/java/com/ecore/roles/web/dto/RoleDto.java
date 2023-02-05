@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -12,7 +13,9 @@ import java.util.UUID;
 @Setter
 @Builder(toBuilder = true)
 @EqualsAndHashCode
-public class RoleDto {
+public class RoleDto implements Serializable {
+
+    private static final long serialVersionUID = -6495601927119593664L;
 
     @JsonProperty
     private UUID id;

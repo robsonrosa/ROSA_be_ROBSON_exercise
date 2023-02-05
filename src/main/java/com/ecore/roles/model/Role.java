@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,9 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Role {
+public class Role implements Serializable {
+
+    private static final long serialVersionUID = 5462707772967932533L;
 
     @Id
     @GeneratedValue(generator = "role-uuid-generator")
