@@ -1,6 +1,5 @@
 package com.ecore.roles.service.impl;
 
-import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.exception.ResourceNotFoundException;
 import com.ecore.roles.model.Role;
@@ -24,7 +23,7 @@ class RolesServiceImpl implements RolesService {
     @Override
     public Role createRole(@NonNull final Role role) {
         if (nonNull(role.getId())) {
-            throw new InvalidArgumentException(Role.class);
+            throw new ResourceExistsException(Role.class);
         }
 
         if (roleRepository.existsByName(role.getName())) {

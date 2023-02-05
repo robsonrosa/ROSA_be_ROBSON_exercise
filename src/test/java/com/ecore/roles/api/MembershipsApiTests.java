@@ -3,14 +3,16 @@ package com.ecore.roles.api;
 import com.ecore.roles.client.model.User;
 import com.ecore.roles.mapper.MembershipMapper;
 import com.ecore.roles.model.Membership;
-import com.ecore.roles.repository.MembershipRepository;
 import com.ecore.roles.utils.RestAssuredHelper;
 import com.ecore.roles.web.dto.MembershipDto;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,14 +23,18 @@ import static com.ecore.roles.utils.MockUtils.mockGetUserById;
 import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
 import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
 import static com.ecore.roles.utils.TestData.*;
+import static com.ecore.roles.utils.TestData.RoleEnum.DEVELOPER;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@Sql(scripts = "/cleanup-data.sql", executionPhase = BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class MembershipsApiTests {
 
-    private final MembershipRepository membershipRepository;
+    private static final EasyRandom generator = new EasyRandom();
 
     private final RestTemplate restTemplate;
 
@@ -40,11 +46,7 @@ public class MembershipsApiTests {
     private int port;
 
     @Autowired
-    public MembershipsApiTests(
-            MembershipRepository membershipRepository,
-            RestTemplate restTemplate,
-            MembershipMapper mapper) {
-        this.membershipRepository = membershipRepository;
+    public MembershipsApiTests(final RestTemplate restTemplate, final MembershipMapper mapper) {
         this.restTemplate = restTemplate;
         this.mapper = mapper;
     }
@@ -53,17 +55,23 @@ public class MembershipsApiTests {
     void setUp() {
         mockServer = MockRestServiceServer.createServer(restTemplate);
         RestAssuredHelper.setUp(port);
-        membershipRepository.deleteAll();
     }
 
     @Test
     void shouldCreateRoleMembership() {
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
 
-        final MembershipDto actualMembership = createDefaultMembership();
+        final MembershipDto model = modelWithRole(DEVELOPER.getId());
+        final MembershipDto expected = model.toBuilder().id(randomUUID()).build();
+
+        mockGetUserById(mockServer, model.getUserId(), DEFAULT_USER());
+        mockGetTeamById(mockServer, model.getTeamId(), DEFAULT_TEAM());
+
+        final MembershipDto actualMembership = createMembership(model.getRoleId(), model)
+                .statusCode(201)
+                .extract().as(MembershipDto.class);
 
         assertThat(actualMembership.getId()).isNotNull();
-        assertThat(actualMembership).isEqualTo(mapper.fromModel(expectedMembership));
+        assertThat(actualMembership).isEqualTo(expected);
     }
 
     @Test
@@ -95,48 +103,72 @@ public class MembershipsApiTests {
     }
 
     @Test
-    void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        createDefaultMembership();
+    void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExistsById() {
+        final MembershipDto model = mapper.fromModel(DEFAULT_MEMBERSHIP());
 
-        createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
+        createMembership(model.getRoleId(), model)
+                .validate(400, "Membership already exists");
+    }
+
+    @Test
+    void shouldFailToCreateRoleMembershipWhenMembershipAlreadyExists() {
+        final MembershipDto model = mapper.fromModel(DEFAULT_MEMBERSHIP())
+                .toBuilder().id(null).build();
+
+        mockGetUserById(mockServer, model.getUserId(), DEFAULT_USER());
+        mockGetTeamById(mockServer, model.getTeamId(), DEFAULT_TEAM());
+
+        createMembership(model.getRoleId(), model)
                 .validate(400, "Membership already exists");
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenRoleDoesNotExist() {
-        final UUID id = randomUUID();
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
+        final UUID roleId = randomUUID();
+        final MembershipDto model = modelWithRole(roleId);
 
-        createMembership(id, mapper.fromModel(expectedMembership))
-                .validate(404, format("Role %s not found", id));
+        createMembership(roleId, model)
+                .validate(404, format("Role %s not found", roleId));
+    }
+
+    @Test
+    void shouldFailToCreateRoleMembershipWhenUserDoesNotExist() {
+        final MembershipDto model = modelWithRole(DEVELOPER.getId());
+
+        mockGetUserById(mockServer, model.getUserId(), null);
+        mockGetTeamById(mockServer, model.getTeamId(), DEFAULT_TEAM());
+
+        createMembership(model.getRoleId(), model)
+                .validate(404, format("User %s not found", model.getUserId()));
     }
 
     @Test
     void shouldFailToCreateRoleMembershipWhenTeamDoesNotExist() {
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetUserById(mockServer, expectedMembership.getUserId(), GIANNI_USER());
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), null);
+        final MembershipDto model = modelWithRole(DEVELOPER.getId());
 
-        createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
-                .validate(404, format("Team %s not found", expectedMembership.getTeamId()));
+        mockGetUserById(mockServer, model.getUserId(), DEFAULT_USER());
+        mockGetTeamById(mockServer, model.getTeamId(), null);
+
+        createMembership(model.getRoleId(), model)
+                .validate(404, format("Team %s not found", model.getTeamId()));
     }
 
     @Test
-    void shouldFailToAssignRoleWhenMembershipIsInvalid() {
-        final Membership expectedMembership = INVALID_MEMBERSHIP();
-        mockGetUserById(mockServer, expectedMembership.getUserId(), User.builder().build());
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
+    void shouldFailToAssignRoleWhenMembershipWhenUserDoesNotBelongTeam() {
+        final MembershipDto model = modelWithRole(DEVELOPER.getId());
 
-        createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
+        mockGetUserById(mockServer, model.getUserId(), User.builder().build());
+        mockGetTeamById(mockServer, model.getTeamId(), DEFAULT_TEAM());
+
+        createMembership(model.getRoleId(), model)
                 .validate(400,
                         "Invalid 'Membership' object. The provided user doesn't belong to the provided team.");
     }
 
     @Test
     void shouldGetAllMemberships() {
-        final MembershipDto dto = createDefaultMembership();
-        final UUID roleId = DEFAULT_MEMBERSHIP().getRole().getId();
+        final UUID roleId = DEVELOPER.getId();
+        final MembershipDto expected = mapper.fromModel(DEFAULT_MEMBERSHIP());
 
         final MembershipDto[] actualMemberships = getMemberships(roleId)
                 .statusCode(200)
@@ -144,26 +176,23 @@ public class MembershipsApiTests {
 
         assertThat(actualMemberships.length).isEqualTo(1);
         assertThat(actualMemberships[0].getId()).isNotNull();
-        assertThat(actualMemberships[0]).isEqualTo(dto);
+        assertThat(actualMemberships[0]).isEqualTo(expected);
     }
 
     @Test
     void shouldGetAllMembershipsButReturnsEmptyList() {
-        final MembershipDto[] actualMemberships = getMemberships(randomUUID())
+        final UUID roleId = randomUUID();
+
+        final MembershipDto[] actual = getMemberships(roleId)
                 .statusCode(200)
                 .extract().as(MembershipDto[].class);
 
-        assertThat(actualMemberships.length).isEqualTo(0);
+        assertThat(actual.length).isEqualTo(0);
     }
 
-    private MembershipDto createDefaultMembership() {
-        final Membership expectedMembership = DEFAULT_MEMBERSHIP();
-        mockGetUserById(mockServer, expectedMembership.getUserId(), GIANNI_USER());
-        mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
-
-        return createMembership(DEVELOPER_ROLE_UUID, mapper.fromModel(expectedMembership))
-                .statusCode(201)
-                .extract().as(MembershipDto.class);
+    private static MembershipDto modelWithRole(final UUID roleId) {
+        return generator.nextObject(MembershipDto.class)
+                .toBuilder().id(null).roleId(roleId).build();
     }
 
 }
