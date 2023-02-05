@@ -1,10 +1,6 @@
 package com.ecore.roles.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -18,6 +14,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"team_id", "user_id"}))
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Membership {
 
     @Id
@@ -26,14 +23,19 @@ public class Membership {
     @Type(type = "uuid-char")
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
+    @EqualsAndHashCode.Include
     private Role role;
 
     @Column(name = "user_id", nullable = false)
+    @Type(type = "uuid-char")
+    @EqualsAndHashCode.Include
     private UUID userId;
 
     @Column(name = "team_id", nullable = false)
+    @Type(type = "uuid-char")
+    @EqualsAndHashCode.Include
     private UUID teamId;
 
 }

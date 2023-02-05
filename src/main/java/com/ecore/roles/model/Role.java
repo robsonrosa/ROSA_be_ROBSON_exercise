@@ -16,6 +16,7 @@ import java.util.UUID;
 @Setter
 @Builder(toBuilder = true)
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
 
     @Id
@@ -24,6 +25,7 @@ public class Role {
     @Type(type = "uuid-char")
     private UUID id;
 
+    @EqualsAndHashCode.Include
     @Column(nullable = false, unique = true)
     private String name;
 
