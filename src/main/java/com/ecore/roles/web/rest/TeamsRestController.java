@@ -1,6 +1,6 @@
 package com.ecore.roles.web.rest;
 
-import com.ecore.roles.mapper.TeamDtoMapper;
+import com.ecore.roles.mapper.TeamMapper;
 import com.ecore.roles.service.TeamsService;
 import com.ecore.roles.web.TeamsApi;
 import com.ecore.roles.web.dto.TeamDto;
@@ -24,14 +24,14 @@ public class TeamsRestController implements TeamsApi {
 
     private final TeamsService service;
 
-    private final TeamDtoMapper mapper;
+    private final TeamMapper mapper;
 
     @Override
     @GetMapping
     public ResponseEntity<List<TeamDto>> getTeams() {
         return ResponseEntity
                 .status(OK)
-                .body(mapper.applyList(service.getTeams()));
+                .body(mapper.fromModelList(service.getTeams()));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TeamsRestController implements TeamsApi {
     public ResponseEntity<TeamDto> getTeam(@PathVariable final UUID id) {
         return ResponseEntity
                 .status(OK)
-                .body(mapper.apply(service.getTeam(id)));
+                .body(mapper.fromModel(service.getTeam(id)));
     }
 
 }

@@ -16,14 +16,14 @@ import static java.util.Optional.ofNullable;
 @Service
 class UsersServiceImpl implements UsersService {
 
-    private final UsersClient usersClient;
+    private final UsersClient client;
 
     public User getUser(final UUID id) {
-        return ofNullable(usersClient.getUser(id).getBody())
+        return ofNullable(client.getUser(id).getBody())
                 .orElseThrow(() -> new ResourceNotFoundException(User.class, id));
     }
 
     public List<User> getUsers() {
-        return usersClient.getUsers().getBody();
+        return client.getUsers().getBody();
     }
 }
