@@ -20,6 +20,7 @@
         <rest-assured.version>4.5.1</rest-assured.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <easy-random.version>5.0.0</easy-random.version>
+        <guava-version>31.1-jre</guava-version>
     </properties>
     <dependencies>
         <dependency>
@@ -47,6 +48,12 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava-version}</version>
+        </dependency>
+
         <!--optional-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -149,6 +156,29 @@
                         <exclude>**/RolesApplication.*</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/.git/hooks</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}</directory>
+                                    <includes>
+                                        <include>pre-commit</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
