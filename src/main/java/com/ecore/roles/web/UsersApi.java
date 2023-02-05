@@ -1,5 +1,6 @@
 package com.ecore.roles.web;
 
+import com.ecore.roles.exception.ErrorResponse;
 import com.ecore.roles.web.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +25,8 @@ public interface UsersApi {
     @Operation(summary = "Find user by uuid", description = "Returns a single user with the specified uuid")
     @ApiResponse(responseCode = "200", description = "Successful retrieval of a user",
             content = @Content(schema = @Schema(implementation = UserDto.class)))
-    @ApiResponse(responseCode = "404", description = "User not found with provided uuid")
+    @ApiResponse(responseCode = "404", description = "User not found with provided uuid",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     ResponseEntity<UserDto> getUser(
             @Parameter(description = "The uuid of the user to find", required = true) UUID userId);
 }

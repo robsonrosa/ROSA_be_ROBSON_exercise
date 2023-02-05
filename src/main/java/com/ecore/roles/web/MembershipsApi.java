@@ -1,5 +1,6 @@
 package com.ecore.roles.web;
 
+import com.ecore.roles.exception.ErrorResponse;
 import com.ecore.roles.web.dto.MembershipDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,9 +21,12 @@ public interface MembershipsApi {
             description = "Returns a new membership with the specified role")
     @ApiResponse(responseCode = "201", description = "Successful creation of a membership",
             content = @Content(schema = @Schema(implementation = MembershipDto.class)))
-    @ApiResponse(responseCode = "400", description = "Provided membership already exists")
-    @ApiResponse(responseCode = "400", description = "Provided user does not belong the team")
-    @ApiResponse(responseCode = "404", description = "Provided { role | team | user } not found")
+    @ApiResponse(responseCode = "400", description = "Provided membership already exists",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Provided user does not belong the team",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Provided { role | team | user } not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     ResponseEntity<MembershipDto> assignRoleToMembership(
             @Parameter(description = "The uuid of the role to assign the membership",
                     required = true) UUID roleId,

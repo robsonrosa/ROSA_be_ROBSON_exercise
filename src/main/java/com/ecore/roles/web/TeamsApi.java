@@ -1,5 +1,6 @@
 package com.ecore.roles.web;
 
+import com.ecore.roles.exception.ErrorResponse;
 import com.ecore.roles.web.dto.TeamDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,7 +25,8 @@ public interface TeamsApi {
     @Operation(summary = "Find team by uuid", description = "Returns a single team with the specified uuid")
     @ApiResponse(responseCode = "200", description = "Successful retrieval of a team",
             content = @Content(schema = @Schema(implementation = TeamDto.class)))
-    @ApiResponse(responseCode = "404", description = "Team not found with provided uuid")
+    @ApiResponse(responseCode = "404", description = "Team not found with provided uuid",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     ResponseEntity<TeamDto> getTeam(
             @Parameter(description = "The uuid of the team to find", required = true) UUID teamId);
 
