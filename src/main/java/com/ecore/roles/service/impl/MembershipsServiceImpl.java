@@ -54,6 +54,7 @@ class MembershipsServiceImpl implements MembershipsService {
         final User user = usersService.getUser(userId);
         final Team team = teamsService.getTeam(teamId);
 
+        // TODO: assume that is valid if the user is the team's lead instead a member
         if (!team.getTeamMemberIds().contains(user.getId())) {
             throw new InvalidArgumentException(Membership.class,
                     "The provided user doesn't belong to the provided team");
@@ -64,6 +65,7 @@ class MembershipsServiceImpl implements MembershipsService {
 
     @Override
     public List<Membership> getMemberships(@NonNull final UUID roleId) {
+        // TODO: validate if roleId exists
         return repository.findByRoleId(roleId);
     }
 }
