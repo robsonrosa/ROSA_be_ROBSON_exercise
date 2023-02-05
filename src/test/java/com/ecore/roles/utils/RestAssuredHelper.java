@@ -1,6 +1,5 @@
 package com.ecore.roles.utils;
 
-import com.ecore.roles.model.Membership;
 import com.ecore.roles.web.dto.MembershipDto;
 import com.ecore.roles.web.dto.RoleDto;
 import io.restassured.RestAssured;
@@ -88,19 +87,20 @@ public class RestAssuredHelper {
                 .then());
     }
 
-    public static EcoreValidatableResponse createMembership(Membership membership) {
-        return sendRequest(givenNullableBody(MembershipDto.fromModel(membership))
+    public static EcoreValidatableResponse createMembership(UUID roleId, MembershipDto dto) {
+        return sendRequest(givenNullableBody(dto)
+                .pathParam("roleId", roleId)
                 .contentType(JSON)
                 .when()
-                .post("/v1/roles/memberships")
+                .post("/v1/roles/{roleId}/memberships")
                 .then());
     }
 
     public static EcoreValidatableResponse getMemberships(UUID roleId) {
         return sendRequest(given()
-                .queryParam("roleId", roleId)
+                .pathParam("roleId", roleId)
                 .when()
-                .get("/v1/roles/memberships/search")
+                .get("/v1/roles/{roleId}/memberships")
                 .then());
     }
 
